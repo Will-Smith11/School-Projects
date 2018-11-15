@@ -47,11 +47,12 @@ class InputBox:
                 else:
                     self.text += event.unicode
                 self.txt_surface = FONT.render(self.text, True, self.color)
+    
+    def username(self,event):
+        "ye"
     def password(self):
         "yeet"
 
-    def username(self):
-        "yeet"
     def update(self):
         width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
@@ -77,11 +78,15 @@ class Label(pygame.sprite.Sprite):
 
 
 
+
 def game_intro():
     background = pygame.Surface(screen.get_size())
     background = background.convert()
     background.fill((0,0,255))
+    
     input_box1 = InputBox(220, 100, 100, 30)
+    
+    
     input_box2 = InputBox(220, 130, 100, 30)
     label1 = Label(100,110,"your username")
     label2 = Label(100,140,"your password")
@@ -93,8 +98,10 @@ def game_intro():
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+        for event in pygame.event.get():
+            if event.type ==       
                 intro = False
-                main()
+                #main()
            
             for box in print_to_screen:
                 box.handle_event(event)
@@ -128,7 +135,7 @@ def main():
     clock = pygame.time.Clock()
     background = pygame.Surface(screen.get_size())
     background = background.convert()
-    background.fill((0,0,0))
+    background.fill((255,0,255))
 
     done = False
     while not done:
@@ -137,7 +144,7 @@ def main():
                 done = True
             
 
-        screen.blit(background,( 0,0))
+        screen.blit(background,(0,0))
         pygame.display.flip()
         clock.tick(30)
   
