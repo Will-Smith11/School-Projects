@@ -13,21 +13,18 @@ color_active = pygame.Color('dodgerblue2')
 FONT = pygame.font.Font(None, 25)
 
 
- 
 def text_objects(text, font):
     textSurface = font.render(text, True, (255,255,255))
     return textSurface, textSurface.get_rect()
 
 
 class Password_Box:
-
-    def __init__(self, x, y, w, h, text=''):
-        self.rect = pygame.Rect(x, y, w, h)
+    def __init__(self, text=''):
+        self.rect = pygame.Rect(220, 130, 100, 30)
         self.color = color_inactive
         self.text = ""
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
-        
         
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -41,14 +38,16 @@ class Password_Box:
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
-                    print(self.text)
-                    self.text = ''
+                    dataBase_in()
+                    
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
                 self.txt_surface = FONT.render(self.text, True, self.color)
-    
+    def return_password(self):
+        return self.text
+
     def update(self):
         width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
@@ -60,13 +59,13 @@ class Password_Box:
 
 class Username_Box:
 
-    def __init__(self, x, y, w, h, text=''):
-        self.rect = pygame.Rect(x, y, w, h)
+    def __init__(self, text = ''):
+        self.rect = pygame.Rect(220, 100, 100, 30)
         self.color = color_inactive
         self.text = ""
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
-
+      
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
@@ -78,15 +77,15 @@ class Username_Box:
         
         if event.type == pygame.KEYDOWN:
             if self.active:
-                if event.key == pygame.K_RETURN:
-                    print(self.text)
-                    
-                elif event.key == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
                 self.txt_surface = FONT.render(self.text, True, self.color)
     
+    def return_username(self):
+        return self.text
+
     def update(self):
         width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
@@ -94,7 +93,7 @@ class Username_Box:
     def draw(self, screen):
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         pygame.draw.rect(screen, self.color, self.rect, 2)
-
+        
 
 
 class Mouse(pygame.sprite.Sprite):
@@ -113,13 +112,16 @@ class Enter_Box(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((100,50))
-        self.image.fill((255,255,0))
+        self.image.fill((255,0,255))
         self.rect = self.image.get_rect()
         self.rect.centerx = 255
         self.rect.centery = 255
-
-        
-        
+        self.font =  pygame.font.SysFont("areal",30)
+        self.text = "press enter to continue"
+    def update(self):
+        self.image = self.font.render(self.text,1,(255,255,255))
+        self.rect = self.image.get_rect()
+        self.rect.center = ((255,255))
 
 
 class Label(pygame.sprite.Sprite):
@@ -130,28 +132,34 @@ class Label(pygame.sprite.Sprite):
         self.center = (x,y)
 
     def update(self):
-        self.image = self.font.render(self.text,1,(0,0,0))
+        self.image = self.font.render(self.text,1,(255,255,255))
         self.rect = self.image.get_rect()
         self.rect.center = self.center
 
 
 
 
+username_box = Username_Box().return_username()
+password_box = Password_Box().return_password()
+
+screen_us = Username_Box()
+screen_pw = Password_Box()
+ 
 def game_intro():
+    
     background = pygame.Surface(screen.get_size())
     background = background.convert()
-    background.fill((0,0,255))
+
     
     enter = Enter_Box()
     mouse_loc = Mouse()
 
-    username_box = Username_Box(220, 100, 100, 30)
-    password_box = Password_Box(220, 130, 100, 30)
+    
     
     
     label1 = Label(100,110,"your username")
     label2 = Label(100,140,"your password")
-    print_to_screen = [password_box, username_box]
+    print_to_screen = [screen_pw, screen_us]
     all_labels = pygame.sprite.Group(label1, label2, enter,mouse_loc)
     
     continue_box = pygame.sprite.Group(enter)
@@ -162,12 +170,13 @@ def game_intro():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 intro = False
-                main()
             if event.type == pygame.MOUSEBUTTONDOWN:
 
                 if pygame.sprite.spritecollide(mouse_loc,continue_box, False): 
+                    dataBase_in()
                     intro = False
-                    main()               
+                    main()
+                                   
             
             for box in print_to_screen:
                 box.handle_event(event)
@@ -222,75 +231,15 @@ def main():
 """ Second part of project"""
 
 
-username = "will"
-class Website_Data_Password_:
-    password = ""
-    website_name = ""
-    name = ""
-    request_website = ""
-    def __init__(self, password = None, website_name = None, name = "error", request_website = "google"):
-        self.password = password
-        self.website_name = website_name
-        self.name = name
-        self.request_website = request_website
-    def set_name(self, name):
-        self.name = name
-    def giv_name(self):
-        return self.name
-
-    def pw_generator(self,size=20, chars=string.ascii_uppercase + string.digits + string.hexdigits+string.ascii_lowercase):
-        self.password =  ''.join(random.choice(chars) for _ in range(size))
-
-    def give_password(self):
-        return self.password
-
-    def set_webname(self, website):
-        self.website_name = website.lower()
-
-    def give_website(self):
-        return self.website_name
-    def request_website_pw(self,request_website):
-        self.request_website = request_website
-        return self.request_website
-        
-    def request_website_name(self):
-        return self.request_website
 
 def dataBase_in():
-    w = 0
-    db = sq.connect('Password_Bank.db')
+
+    db = sq.connect('Game_Username_and_Password.db')
     c = db.cursor()
-    c.execute("CREATE TABLE IF NOT EXISTS"+" "+username+"(website, password)")
-    stop = False
-    while stop == False:
-        
-        try:
-            c.execute("SELECT * FROM"+" "+username)
-            check = c.fetchall()[w][0]
+    c.execute("CREATE TABLE IF NOT EXISTS player_data(username, password)")
+    c.execute("INSERT INTO player_data(username, password)VALUES(:username, :password)",
+            {'username':username_box,'password':password_box})
 
-        
-        except:
-            
-            if w == 500:
-                
-                c.execute("INSERT INTO"+" "+username+" "+"(website, password) VALUES(:website, :password)",
-                        {'website':values.give_website(), 'password':values.give_password()})
-                
-                print(values.give_password()+" "+ "is your new password for"+" "+values.give_website())
-                stop = True
-        
-        try:
-            if check != values.give_website():
-                w = w +1
-
-            if check == values.give_website():
-                print("Website Password already in DB")
-                stop = True
-        except:
-            c.execute("INSERT INTO"+" "+username+" "+"(website, password) VALUES(:website, :password)",
-                        {'website':values.give_website(), 'password':values.give_password()})
-            print(values.give_password()+" "+ "is your new generated password for"+" "+values.give_website())
-            stop = True
     db.commit()
 
 
