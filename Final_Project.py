@@ -27,7 +27,8 @@ class Password_Box:
         self.text = ""
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
-
+        
+        
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
@@ -93,8 +94,6 @@ class Username_Box:
     def draw(self, screen):
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         pygame.draw.rect(screen, self.color, self.rect, 2)
-
-
 
 
 
