@@ -19,7 +19,7 @@ def text_objects(text, font):
     return textSurface, textSurface.get_rect()
 
 
-class InputBox:
+class Password_Box:
 
     def __init__(self, x, y, w, h, text=''):
         self.rect = pygame.Rect(x, y, w, h)
@@ -48,11 +48,6 @@ class InputBox:
                     self.text += event.unicode
                 self.txt_surface = FONT.render(self.text, True, self.color)
     
-    def username(self,event):
-        "ye"
-    def password(self):
-        "yeet"
-
     def update(self):
         width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
@@ -62,6 +57,70 @@ class InputBox:
         pygame.draw.rect(screen, self.color, self.rect, 2)
 
 
+class Username_Box:
+
+    def __init__(self, x, y, w, h, text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = color_inactive
+        self.text = ""
+        self.txt_surface = FONT.render(text, True, self.color)
+        self.active = False
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+        
+            self.color = color_active if self.active else color_inactive
+        
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    print(self.text)
+                    
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                else:
+                    self.text += event.unicode
+                self.txt_surface = FONT.render(self.text, True, self.color)
+    
+    def update(self):
+        width = max(200, self.txt_surface.get_width()+10)
+        self.rect.w = width
+
+    def draw(self, screen):
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+
+
+
+
+
+class Mouse(pygame.sprite.Sprite):
+    def __init__(self):
+            pygame.sprite.Sprite.__init__(self)
+            self.image = pygame.Surface((30,30))
+            self.image.fill((255,0,0))
+            self.rect = self.image.get_rect()
+        
+    def update(self):
+        self.rect.center = pygame.mouse.get_pos()
+
+
+
+class Enter_Box(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((100,50))
+        self.image.fill((255,255,0))
+        self.rect = self.image.get_rect()
+        self.rect.centerx = 255
+        self.rect.centery = 255
+
+        
+        
 
 
 class Label(pygame.sprite.Sprite):
@@ -84,32 +143,39 @@ def game_intro():
     background = background.convert()
     background.fill((0,0,255))
     
-    input_box1 = InputBox(220, 100, 100, 30)
+    enter = Enter_Box()
+    mouse_loc = Mouse()
+
+    username_box = Username_Box(220, 100, 100, 30)
+    password_box = Password_Box(220, 130, 100, 30)
     
     
-    input_box2 = InputBox(220, 130, 100, 30)
     label1 = Label(100,110,"your username")
     label2 = Label(100,140,"your password")
-    print_to_screen = [input_box1, input_box2]
-    all_labels = pygame.sprite.Group(label1, label2)
+    print_to_screen = [password_box, username_box]
+    all_labels = pygame.sprite.Group(label1, label2, enter,mouse_loc)
     
+    continue_box = pygame.sprite.Group(enter)
+
     intro = True
     clock = pygame.time.Clock()
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-        for event in pygame.event.get():
-            if event.type ==       
                 intro = False
-                #main()
-           
+                main()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+
+                if pygame.sprite.spritecollide(mouse_loc,continue_box, False): 
+                    intro = False
+                    main()               
+            
             for box in print_to_screen:
                 box.handle_event(event)
 
         largeText = pygame.font.Font('freesansbold.ttf',30)
         TextSurf, TextRect = text_objects("Will's Cool game in the process", largeText)
         TextRect.center = ((400),(300))
-        
         
 
         for box in print_to_screen:
@@ -120,14 +186,16 @@ def game_intro():
         for box in print_to_screen:
             box.draw(screen)
         
+
         all_labels.clear(screen,background)
         all_labels.update()
         all_labels.draw(screen)   
         screen.blit(TextSurf, TextRect)
         
+        
     
         pygame.display.flip()
-        clock.tick(15)
+        clock.tick(60)
 
 
 
@@ -149,27 +217,14 @@ def main():
         clock.tick(30)
   
   
-  #  username = input("what is your name?")
-   # username = username.lower()
-    #values = Website_Data_Input()
-    #values.pw_generator(int(input("how many digits do you want the password to be?")))
-    #values.set_webname(input("what is the website you want a password generated for"))
-    #request = input("do you want to get a password for a website? yes, no")
-    #request = request.lower()
-    #if request == ("yes"):
-     #   request_website = values.request_website_pw(input("what website do you want a password for?"))
-      #  dataBase_out()
-    #else:
-     #   dataBase_in()
+    
 
 
 """ Second part of project"""
 
 
-
-
-# add encription to
-class Website_Data_Input:
+username = "will"
+class Website_Data_Password_:
     password = ""
     website_name = ""
     name = ""
