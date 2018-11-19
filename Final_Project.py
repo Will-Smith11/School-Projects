@@ -1,16 +1,16 @@
 """"will's password generator + storage system"""
 import sqlite3 as sq
-import random
-import string
 import pygame
-import hashlib
-
+import sys
+sys.path.insert(0,'T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/games')
+import game_snake
 
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 color_inactive = pygame.Color('lightskyblue3')
 color_active = pygame.Color('dodgerblue2')
 FONT = pygame.font.Font(None, 25)
+
 
 
 def text_objects(text, font):
@@ -38,7 +38,9 @@ class Password_Box:
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_RETURN:
+                    intro = False
                     dataBase_in()
+                    game_slection_screen()
                     
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
@@ -139,13 +141,10 @@ class Label(pygame.sprite.Sprite):
 
 
 
-username_box = Username_Box().return_username()
-password_box = Password_Box().return_password()
-
 screen_us = Username_Box()
 screen_pw = Password_Box()
  
-def game_intro():
+def game_login():
     
     background = pygame.Surface(screen.get_size())
     background = background.convert()
@@ -163,7 +162,7 @@ def game_intro():
     all_labels = pygame.sprite.Group(label1, label2, enter,mouse_loc)
     
     continue_box = pygame.sprite.Group(enter)
-
+    global intro
     intro = True
     clock = pygame.time.Clock()
     while intro:
@@ -175,7 +174,7 @@ def game_intro():
                 if pygame.sprite.spritecollide(mouse_loc,continue_box, False): 
                     dataBase_in()
                     intro = False
-                    main()
+                    game_slection_screen()
                                    
             
             for box in print_to_screen:
@@ -189,7 +188,7 @@ def game_intro():
         for box in print_to_screen:
             box.update()
         
-        screen.fill((30,30,30))
+        screen.fill((0,0,0))
         
         for box in print_to_screen:
             box.draw(screen)
@@ -207,7 +206,7 @@ def game_intro():
 
 
 
-def main():
+def game_slection_screen():
     clock = pygame.time.Clock()
     background = pygame.Surface(screen.get_size())
     background = background.convert()
@@ -218,6 +217,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
+                game_snake.main()
             
 
         screen.blit(background,(0,0))
@@ -238,44 +238,17 @@ def dataBase_in():
     c = db.cursor()
     c.execute("CREATE TABLE IF NOT EXISTS player_data(username, password)")
     c.execute("INSERT INTO player_data(username, password)VALUES(:username, :password)",
-            {'username':username_box,'password':password_box})
+            {'username':screen_us.return_username(),'password':screen_pw.return_password()})
 
     db.commit()
 
-
-
-
-def dataBase_out():
-
-    db = sq.connect('Password_Bank.db')
-    c = db.cursor()
-    w = 0
-    stop = False
-    while stop == False:
-        try:
-            c.execute("SELECT * FROM"+" "+username)
-            data = c.fetchall()[w][0]
-            
-        except: 
-            if w == 500:
-                print("\n\nError... no password found for the website "+" "+values.request_website_name())
-                stop == True
-        
-        if data != request_website:
-            w = w+1
-        
-        if data == request_website:
-            c.execute("SELECT * FROM"+" "+username)
-            print("\n"+c.fetchall()[w][1]+" "+"is your password for"+values.request_website_name())
-            stop = True
-    db.commit()
 
 
 
 
 
 if __name__ =="__main__":
-    game_intro()
+    game_login()
  
 
 
