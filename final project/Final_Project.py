@@ -2,8 +2,10 @@
 import pygame
 import data_base_fuctions
 import sys
+import os
 sys.path.insert(0,"/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/games/")
 import game_snake
+import Space_invaders
 
 
 
@@ -184,6 +186,7 @@ def game_login():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 intro = False
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
 
                 if pygame.sprite.spritecollide(mouse_loc,continue_box, False): 
@@ -225,15 +228,15 @@ def game_slection_screen():
     background = pygame.image.load("/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/christmas.jpg")
     background.get_rect()
     page = Game_slection(175,125,(255,0,0),"/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/snake_background.jpg")
-    page2 = Game_slection(175,475,(255,0,255))
+    page2 = Game_slection(175,475,(255,0,255),"/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/space_invader_background.jpg")
     page3 = Game_slection(625,125,(0,255,0))
     page4 = Game_slection(625,475,(0,255,255))
     mouse = Mouse()
 
-
     game_label = Label(175,125,[0,0,0],"Snake Game", 50)
+    game_label2 = Label(175,475,[255,255,255],"Space Invaders",50)
 
-    print_to_screen = pygame.sprite.Group(page,page2,page3,page4,mouse,game_label)
+    print_to_screen = pygame.sprite.Group(page,page2,page3,page4,mouse,game_label,game_label2)
     
     game1 = pygame.sprite.Group(page)
     game2 = pygame.sprite.Group(page2)
@@ -254,8 +257,7 @@ def game_slection_screen():
                 
                 if pygame.sprite.spritecollide(mouse,game2,False):
                     done = True
-                    #put game in here
-                    #nsnake.main()
+                    Space_invaders.main()
                 
                 if pygame.sprite.spritecollide(mouse,game3,False):
                     done = True
@@ -277,6 +279,7 @@ def game_slection_screen():
 
 if __name__ =="__main__":
     game_login()
+    pygame.quit()
  
 
 

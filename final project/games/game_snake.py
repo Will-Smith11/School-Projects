@@ -2,7 +2,6 @@ import pygame
 import sys
 import time
 import random
-sys.path.insert(0,'/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/')
 import Final_Project
 
 def showScore(choice=1):
@@ -18,12 +17,10 @@ def showScore(choice=1):
 
 def main():
     global score,playSurface
-
-    800 
+ 
     playSurface = pygame.display.set_mode((800,600))
     pygame.display.set_caption("Snake Game")
     
-   
     snakePos = [100, 50]
     snakeBody = [[100, 50], [90, 50], [80, 50]]
     foodPos = [400, 50]
@@ -39,8 +36,6 @@ def main():
                 running = False
                 Final_Project.game_slection_screen()
 
-            if event.type == pygame.K_SPACE:
-                FPS = 0
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
@@ -54,7 +49,6 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
 
-        # Validate direction
         if changeto == 'RIGHT' and direction != 'LEFT':
             direction = changeto
         if changeto == 'LEFT' and direction != 'RIGHT':
@@ -64,7 +58,6 @@ def main():
         if changeto == 'DOWN' and direction != 'UP':
             direction = changeto
 
-        # Update snake position
         if direction == 'RIGHT':
             snakePos[0] += 10
         if direction == 'LEFT':
@@ -74,7 +67,6 @@ def main():
         if direction == 'UP':
             snakePos[1] -= 10
 
-        # Snake body mechanism
         snakeBody.insert(0, list(snakePos))
         if snakePos == foodPos:
             foodSpawn = False
@@ -91,7 +83,7 @@ def main():
             pygame.draw.rect(playSurface, (0,255,0), pygame.Rect(pos[0], pos[1], 10, 10))
         pygame.draw.rect(playSurface, (165, 42, 42), pygame.Rect(foodPos[0], foodPos[1], 10, 10))
 
-        # Bounds
+       
         if snakePos[0] >= 800 or snakePos[0] < 0:
             running = False
             Final_Project.game_slection_screen()
@@ -100,7 +92,6 @@ def main():
             running = False
             Final_Project.game_slection_screen()
 
-        # Self hit
         for block in snakeBody[1:]:
             if snakePos == block:
                 running = False
