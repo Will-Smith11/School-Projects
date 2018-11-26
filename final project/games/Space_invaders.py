@@ -3,18 +3,20 @@ import pygame
 import random
 import Final_Project
 import os
+
+
 pygame.init()
 screen = pygame.display.set_mode((800,600))
 
 
 
 
-
+    
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/player.png")
+        self.image = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname( __file__ )), 'pictures','player.png')).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.centerx = 400
         self.rect.centery = 560
@@ -22,9 +24,9 @@ class Player(pygame.sprite.Sprite):
         
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            self.rect.x +=7
+            self.rect.x +=8
         if keys[pygame.K_LEFT]:
-            self.rect.x -=7
+            self.rect.x -=8
 
         if self.rect.x >785:
             self.rect.x = 785
@@ -37,7 +39,7 @@ class Player(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/bullet.png")
+        self.image = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'pictures','bullet.png')).convert_alpha()
         self.rect = self.image.get_rect()
     def update(self):
         self.rect.y -= 10
@@ -45,30 +47,44 @@ class Bullet(pygame.sprite.Sprite):
 class Alien(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/alien.png")
+        self.image = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'pictures','alien.png')).convert_alpha()
         self.rect = self.image.get_rect()
     
     def update(self):
         self.rect.x += 5
         if self.rect.x > 780:
-            self.rect.y += 60
+            self.rect.y += 100
             self.rect.x = 20
     def get_pos(self):
         return self.rect.x
 
+    def get_y(self):
+        return self.rect.y
+
 class Bomb(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("../pictures/bomb.png")
+        self.image = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'pictures','bomb.png')).convert_alpha()
         self.rect = self.image.get_rect()
     
     def update(self):
-        self.rect.y += 10
+        self.rect.y += 7
+
+def showScore():
+    font = pygame.font.SysFont('monaco', 32)
+    text = font.render("Score  :  {0}".format(score), True, (0,0,0))
+    location = text.get_rect()
+    location.midtop = (80, 10)
+    screen.blit(text, location)
+
 
 def main():
+    global score
     pygame.display.set_caption("Space Invaders")
-    background = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/Space_background.jpg")
+    background = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname( __file__ )), 'pictures','Space_background.jpg')).convert_alpha()
     background.get_rect()
+
+    score = 0
 
     player = Player()
 
@@ -84,17 +100,16 @@ def main():
     all_sprites.add(player)
 
     
-
+    
     clock = pygame.time.Clock()
     keepygameoing = True
     while keepygameoing:
 
-        clock.tick(30)
+        
         screen.blit(background,(0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 keepygameoing = False
-                
                 Final_Project.game_slection_screen()
             
             keys = pygame.key.get_pressed()
@@ -106,7 +121,8 @@ def main():
             
                 all_sprites.add(bullet)
                 bullet_list.add(bullet)
-        
+            
+
         if random.randint(0,30) == 5:
             alien = Alien()
             
@@ -121,23 +137,26 @@ def main():
             try:
                 for x in alien_list.sprites():
                     x = 0
-                    x = x+1
+                    x += 1
                 rand = random.randint(0,x)
                 randalien = alien_list.sprites()[rand]
                 bomb.rect.x = randalien.get_pos()
                 all_sprites.add(bomb)
-                bomb_list.add(bomb)
-            
-                 
-                
+                bomb_list.add(bomb)  
             except:
                 pass
-
         
         all_sprites.update()
 
-
-
+        
+        for enemy in alien_list.sprites():
+            
+            location = pygame.sprite.spritecollide(player,alien_list,True)
+            
+            for hit in location:
+                keepygameoing = False
+                Final_Project.game_slection_screen()
+        
 
         for bullet in bullet_list:
  
@@ -146,7 +165,7 @@ def main():
             for block in block_hit_list:
                 bullet_list.remove(bullet)
                 all_sprites.remove(bullet)
-            
+                score += 1
             if bullet.rect.y < -10:
                 bullet_list.remove(bullet)
                 all_sprites.remove(bullet)
@@ -163,15 +182,10 @@ def main():
             if bomb.rect.y > 600:
                 bomb_list.remove(bomb)
                 all_sprites.remove(bomb)        
-        try:
-            x = random.randint(0,3)
-            (alien_list.sprites()[x])
-        except:
-            pass
-        
-        
+       
+        showScore()
+        clock.tick(30)
         all_sprites.draw(screen)
-
         pygame.display.flip()
 
 

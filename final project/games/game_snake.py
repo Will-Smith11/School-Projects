@@ -1,24 +1,19 @@
 import pygame
-import sys
-import time
 import random
 import Final_Project
 
-def showScore(choice=1):
-    SFont = pygame.font.SysFont('monaco', 32)
-    Ssurf = SFont.render("Score  :  {0}".format(score), True, (0,0,0))
-    Srect = Ssurf.get_rect()
-    if choice == 1:
-        Srect.midtop = (80, 10)
-    else:
-        Srect.midtop = (320, 100)
-    playSurface.blit(Ssurf, Srect)
+def showScore():
+    font = pygame.font.SysFont('monaco', 32)
+    text = font.render("Score  :  {0}".format(score), True, (0,0,0))
+    location = text.get_rect()
+    location.midtop = (80, 10)
+    screen.blit(text, location)
 
 
 def main():
-    global score,playSurface
+    global score,screen
  
-    playSurface = pygame.display.set_mode((800,600))
+    screen = pygame.display.set_mode((800,600))
     pygame.display.set_caption("Snake Game")
     
     snakePos = [100, 50]
@@ -28,6 +23,7 @@ def main():
     direction = 'RIGHT'
     changeto = ''
     score = 0
+    
     clock = pygame.time.Clock()
     running = True
     while running:
@@ -73,15 +69,17 @@ def main():
             score += 1
         else:
             snakeBody.pop()
+
         if foodSpawn == False:
-            foodPos = [random.randrange(1, 800 // 10) * 10, random.randrange(1, 600 // 10) * 10]
+            foodPos = [random.randrange(1, 800 // 10)*10, random.randrange(1, 600 // 10)*10]
             foodSpawn = True
 
-        playSurface.fill((255,255,255))
+        screen.fill((255,255,255))
        
         for pos in snakeBody:
-            pygame.draw.rect(playSurface, (0,255,0), pygame.Rect(pos[0], pos[1], 10, 10))
-        pygame.draw.rect(playSurface, (165, 42, 42), pygame.Rect(foodPos[0], foodPos[1], 10, 10))
+            pygame.draw.rect(screen, (0,255,0), pygame.Rect(pos[0], pos[1], 10, 10))
+        
+        pygame.draw.rect(screen, (165, 42, 42), pygame.Rect(foodPos[0], foodPos[1], 10, 10))
 
        
         if snakePos[0] >= 800 or snakePos[0] < 0:
@@ -96,6 +94,7 @@ def main():
             if snakePos == block:
                 running = False
                 Final_Project.game_slection_screen()
+        
         showScore()
         pygame.display.flip()
         

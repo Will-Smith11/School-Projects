@@ -3,8 +3,8 @@ import pygame
 import data_base_fuctions
 import sys
 import os
-import games.game_snake 
-import games.Space_invaders 
+import games.game_snake
+import games.Space_invaders
 
 
 
@@ -16,51 +16,8 @@ FONT = pygame.font.Font(None, 25)
 pygame.mouse.set_visible(False)
 
 
-def text_objects(text, font):
-    textSurface = font.render(text, True, (255,255,255))
-    return textSurface, textSurface.get_rect()
 
 
-class Password_Box:
-    def __init__(self, text=''):
-        self.rect = pygame.Rect(220, 130, 100, 30)
-        self.color = color_inactive
-        self.text = ""
-        self.txt_surface = FONT.render(text, True, self.color)
-        self.active = False
-        
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.active = not self.active
-            else:
-                self.active = False
-        
-            self.color = color_active if self.active else color_inactive
-        
-        if event.type == pygame.KEYDOWN:
-            if self.active:
-                if event.key == pygame.K_RETURN:
-                    intro = False
-                    data_base_fuctions.dataBase_in()
-                    game_slection_screen()
-                    
-                elif event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
-                else:
-                    self.text += event.unicode
-                self.txt_surface = FONT.render(self.text, True, self.color)
-    
-    def return_password(self):
-        return self.text
-
-    def update(self):
-        width = max(200, self.txt_surface.get_width()+10)
-        self.rect.w = width
-
-    def draw(self, screen):
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
-        pygame.draw.rect(screen, self.color, self.rect, 2)
 
 class Username_Box:
 
@@ -105,12 +62,11 @@ class Username_Box:
 class Mouse(pygame.sprite.Sprite):
     def __init__(self):
             pygame.sprite.Sprite.__init__(self)
-            self.image = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/cursor.png")
+            self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), 'pictures','cursor.png')).convert_alpha()
             self.rect = self.image.get_rect()
         
     def update(self):
         self.rect.center = pygame.mouse.get_pos()
-
 
 
 class Enter_Box(pygame.sprite.Sprite):
@@ -159,9 +115,8 @@ class Game_slection(pygame.sprite.Sprite):
         
 
 
-screen_us = Username_Box()
-screen_pw = Password_Box()
- 
+username = Username_Box()
+
 def game_login():
     background = pygame.Surface(screen.get_size())
     background = background.convert()
@@ -172,9 +127,9 @@ def game_login():
 
     
     label1 = Label(100,110, [255,255,255],"username", 30)
-    label2 = Label(100,140,[255,255,255],"password", 30)
-    print_to_screen = [screen_pw, screen_us]
-    all_labels = pygame.sprite.Group(label1, label2, enter,mouse_loc)
+    
+    print_to_screen = [username]
+    all_labels = pygame.sprite.Group(label1, enter,mouse_loc)
     
     continue_box = pygame.sprite.Group(enter)
 
@@ -190,6 +145,7 @@ def game_login():
 
                 if pygame.sprite.spritecollide(mouse_loc,continue_box, False): 
                     data_base_fuctions.dataBase_in()
+                    print(username.return_username())
                     intro = False
                     game_slection_screen()
                                    
@@ -197,10 +153,6 @@ def game_login():
             for box in print_to_screen:
                 box.handle_event(event)
 
-        largeText = pygame.font.Font('freesansbold.ttf',30)
-        TextSurf, TextRect = text_objects("Will's Cool game in the process", largeText)
-        TextRect.center = ((400),(300))
-        
 
         for box in print_to_screen:
             box.update()
@@ -209,7 +161,7 @@ def game_login():
         for box in print_to_screen:
             box.draw(screen)
         
-        screen.blit(TextSurf, TextRect)
+  
         all_labels.clear(screen,background)
         all_labels.update()
         all_labels.draw(screen)   
@@ -224,10 +176,10 @@ def game_login():
 
 def game_slection_screen():
     clock = pygame.time.Clock()
-    background = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/christmas.jpg")
+    background = pygame.image.load(os.path.join(os.path.dirname(__file__), 'pictures','christmas.jpg')).convert_alpha()
     background.get_rect()
-    page = Game_slection(175,125,(255,0,0),"T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/snake_background.jpg")
-    page2 = Game_slection(175,475,(255,0,255),"T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/space_invader_background.jpg")
+    page = Game_slection(175,125,(255,0,0),(os.path.join(os.path.dirname(__file__), 'pictures','snake_background.jpg')))
+    page2 = Game_slection(175,475,(255,0,255),(os.path.join(os.path.dirname(__file__), 'pictures','space_invader_background.jpg')))
     page3 = Game_slection(625,125,(0,255,0))
     page4 = Game_slection(625,475,(0,255,255))
     mouse = Mouse()
@@ -241,7 +193,8 @@ def game_slection_screen():
     game2 = pygame.sprite.Group(page2)
     game3 = pygame.sprite.Group(page3)
     game4 = pygame.sprite.Group(page4)
-
+    
+    
 
     done = False
     while not done:
