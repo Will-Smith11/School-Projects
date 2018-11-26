@@ -3,9 +3,8 @@ import pygame
 import data_base_fuctions
 import sys
 import os
-sys.path.insert(0,"/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/games/")
-import game_snake
-import Space_invaders
+import games.game_snake 
+import games.Space_invaders 
 
 
 
@@ -106,7 +105,7 @@ class Username_Box:
 class Mouse(pygame.sprite.Sprite):
     def __init__(self):
             pygame.sprite.Sprite.__init__(self)
-            self.image = pygame.image.load("/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/cursor.png")
+            self.image = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/cursor.png")
             self.rect = self.image.get_rect()
         
     def update(self):
@@ -225,10 +224,10 @@ def game_login():
 
 def game_slection_screen():
     clock = pygame.time.Clock()
-    background = pygame.image.load("/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/christmas.jpg")
+    background = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/christmas.jpg")
     background.get_rect()
-    page = Game_slection(175,125,(255,0,0),"/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/snake_background.jpg")
-    page2 = Game_slection(175,475,(255,0,255),"/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/space_invader_background.jpg")
+    page = Game_slection(175,125,(255,0,0),"T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/snake_background.jpg")
+    page2 = Game_slection(175,475,(255,0,255),"T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/space_invader_background.jpg")
     page3 = Game_slection(625,125,(0,255,0))
     page4 = Game_slection(625,475,(0,255,255))
     mouse = Mouse()
@@ -253,11 +252,11 @@ def game_slection_screen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.sprite.spritecollide(mouse,game1,False):
                     done = True
-                    game_snake.main()
+                    games.game_snake.main()
                 
                 if pygame.sprite.spritecollide(mouse,game2,False):
                     done = True
-                    Space_invaders.main()
+                    games.Space_invaders.main()
                 
                 if pygame.sprite.spritecollide(mouse,game3,False):
                     done = True

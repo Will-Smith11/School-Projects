@@ -2,14 +2,19 @@
 import pygame
 import random
 import Final_Project
+import os
 pygame.init()
 screen = pygame.display.set_mode((800,600))
+
+
+
+
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/player.jpeg")
+        self.image = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/player.png")
         self.rect = self.image.get_rect()
         self.rect.centerx = 400
         self.rect.centery = 560
@@ -32,7 +37,7 @@ class Player(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/bullet.jpeg")
+        self.image = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/bullet.png")
         self.rect = self.image.get_rect()
     def update(self):
         self.rect.y -= 10
@@ -40,13 +45,13 @@ class Bullet(pygame.sprite.Sprite):
 class Alien(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/alien.png")
+        self.image = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/alien.png")
         self.rect = self.image.get_rect()
     
     def update(self):
         self.rect.x += 5
         if self.rect.x > 780:
-            self.rect.y += 20
+            self.rect.y += 60
             self.rect.x = 20
     def get_pos(self):
         return self.rect.x
@@ -54,7 +59,7 @@ class Alien(pygame.sprite.Sprite):
 class Bomb(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/bomb.png")
+        self.image = pygame.image.load("../pictures/bomb.png")
         self.rect = self.image.get_rect()
     
     def update(self):
@@ -62,7 +67,7 @@ class Bomb(pygame.sprite.Sprite):
 
 def main():
     pygame.display.set_caption("Space Invaders")
-    background = pygame.image.load("/Users/davesmith/Desktop/Python/final school project/School-Projects-master 2/final project/pictures/Space_background.jpg")
+    background = pygame.image.load("T:/EAS-ICS3U1-1/will7460/Python/unit_3/final project/final project/pictures/Space_background.jpg")
     background.get_rect()
 
     player = Player()
@@ -84,7 +89,7 @@ def main():
     keepygameoing = True
     while keepygameoing:
 
-        clock.tick(120)
+        clock.tick(30)
         screen.blit(background,(0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -104,21 +109,29 @@ def main():
         
         if random.randint(0,30) == 5:
             alien = Alien()
-
+            
             alien.rect.x = 20
             alien.rect.y = 20
 
             all_sprites.add(alien)
             alien_list.add(alien)
 
-        if random.randint(0,30) == 1:
+        if random.randint(0,20) == 5:
             bomb = Bomb()
             try:
-                bomb.rect.x = alien.get_pos()
+                for x in alien_list.sprites():
+                    x = 0
+                    x = x+1
+                rand = random.randint(0,x)
+                randalien = alien_list.sprites()[rand]
+                bomb.rect.x = randalien.get_pos()
+                all_sprites.add(bomb)
+                bomb_list.add(bomb)
+            
+                 
+                
             except:
                 pass
-            all_sprites.add(bomb)
-            bomb_list.add(bomb)
 
         
         all_sprites.update()
@@ -150,6 +163,12 @@ def main():
             if bomb.rect.y > 600:
                 bomb_list.remove(bomb)
                 all_sprites.remove(bomb)        
+        try:
+            x = random.randint(0,3)
+            (alien_list.sprites()[x])
+        except:
+            pass
+        
         
         all_sprites.draw(screen)
 
