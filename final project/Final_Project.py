@@ -124,15 +124,17 @@ class Ranking_display(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.center   
 
+def img(img=str):
+    return os.path.join(os.path.dirname(__file__), 'pictures','{}'.format(img))
 
 
 def game_slection_screen():
     clock = pygame.time.Clock()
 
-    background = pygame.image.load(os.path.join(os.path.dirname(__file__), 'pictures','christmas.jpg'))
+    background = pygame.image.load(img("christmas.jpg"))
     background.get_rect()
-    page = Game_slection(175,125,(255,0,0),(os.path.join(os.path.dirname(__file__), 'pictures','snake_background.jpg')))
-    page2 = Game_slection(175,475,(255,0,255),(os.path.join(os.path.dirname(__file__), 'pictures','space_invader_background.jpg')))
+    page = Game_slection(175,125,(255,0,0),(img("snake_background.jpg")))
+    page2 = Game_slection(175,475,(255,0,255),(img("space_invader_background.jpg")))
     page3 = Game_slection(625,125,(0,255,0))
     page4 = Game_slection(625,475,(0,255,255))
     mouse = Mouse()
