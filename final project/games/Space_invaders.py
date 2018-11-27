@@ -3,20 +3,21 @@ import pygame
 import random
 import Final_Project
 import os
-
+import data_base_fuctions
 
 pygame.init()
 screen = pygame.display.set_mode((800,600))
 
 
 
+def img(img=str):
+    return os.path.join(os.path.dirname(os.path.dirname( __file__ )), 'pictures','{}'.format(img))
 
-    
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname( __file__ )), 'pictures','player.png')).convert_alpha()
+        self.image = pygame.image.load(img("player.png"))
         self.rect = self.image.get_rect()
         self.rect.centerx = 400
         self.rect.centery = 560
@@ -39,7 +40,7 @@ class Player(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'pictures','bullet.png')).convert_alpha()
+        self.image = pygame.image.load(img("bullet.png"))
         self.rect = self.image.get_rect()
     def update(self):
         self.rect.y -= 10
@@ -47,7 +48,7 @@ class Bullet(pygame.sprite.Sprite):
 class Alien(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'pictures','alien.png')).convert_alpha()
+        self.image = pygame.image.load(img("alien.png"))
         self.rect = self.image.get_rect()
     
     def update(self):
@@ -64,7 +65,7 @@ class Alien(pygame.sprite.Sprite):
 class Bomb(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'pictures','bomb.png')).convert_alpha()
+        self.image = pygame.image.load(img("bomb.png"))
         self.rect = self.image.get_rect()
     
     def update(self):
@@ -77,28 +78,82 @@ def showScore():
     location.midtop = (80, 10)
     screen.blit(text, location)
 
+def game_over_text():
+    font = pygame.font.SysFont('monaco', 60, bold=True)
+    text = font.render("GAME OVER! Your score was {0}".format(score), True,(255,0,0))
+    location = text.get_rect()
+    location.midtop = (400,100)
+    screen.blit(text, location)
+
+
+def game_over():
+    mouse = Final_Project.Mouse()
+    pygame.display.set_caption("Game Over")
+    
+    button = Final_Project.Enter_Box(400,400,"""click to add your score """)
+    button2= Final_Project.Enter_Box(400,442,"""or to continue""")
+
+    all_sprits = pygame.sprite.Group(mouse)
+    button_spirte = pygame.sprite.Group(button,button2)
+    clock = pygame.time.Clock()
+    
+    playerID = Final_Project.Username_Box(300,250,300,50)
+    print_to_screen = [playerID]
+    
+    endscreen = True
+    while endscreen:
+        screen.blit(background,(0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                endscreen = False
+                Final_Project.game_slection_screen()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pygame.sprite.spritecollide(mouse,button_spirte, False):
+                    endscreen = False
+                    data_base_fuctions.dataBase_in(playerID.return_username(),"Aliens",score)
+                    Final_Project.game_slection_screen()
+                    
+
+            for box in print_to_screen:
+                box.handle_event(event)
+
+
+        for box in print_to_screen:
+            box.update()
+        
+        
+        for box in print_to_screen:
+            box.draw(screen)
+
+
+        clock.tick(30)
+        
+        all_sprits.clear(background,screen)
+        button_spirte.clear(background,screen)
+        all_sprits.update()
+        button_spirte.update()
+        button_spirte.draw(screen)
+        all_sprits.draw(screen)
+        
+        game_over_text()
+        
+        pygame.display.flip()
+          
+
 
 def main():
-    global score
+    global score, background
     pygame.display.set_caption("Space Invaders")
-    background = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname( __file__ )), 'pictures','Space_background.jpg')).convert_alpha()
+    background = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname( __file__ )), 'pictures','Space_background.jpg'))
     background.get_rect()
 
     score = 0
-
     player = Player()
-
-    
     all_sprites = pygame.sprite.Group()
-    
     bullet_list = pygame.sprite.Group()
-    
     alien_list = pygame.sprite.Group()
-
     bomb_list = pygame.sprite.Group()
-
     all_sprites.add(player)
-
     
     
     clock = pygame.time.Clock()
@@ -110,7 +165,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 keepygameoing = False
-                Final_Project.game_slection_screen()
+                
             
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
@@ -154,8 +209,9 @@ def main():
             location = pygame.sprite.spritecollide(player,alien_list,True)
             
             for hit in location:
+                game_over()
                 keepygameoing = False
-                Final_Project.game_slection_screen()
+               
         
 
         for bullet in bullet_list:
@@ -176,8 +232,10 @@ def main():
             for explode in bomb_hit_list:
                 bomb_list.remove(bomb)
                 all_sprites.remove(bomb)
+             
+                game_over()
                 keepygameoing = False
-                Final_Project.game_slection_screen()
+                
 
             if bomb.rect.y > 600:
                 bomb_list.remove(bomb)

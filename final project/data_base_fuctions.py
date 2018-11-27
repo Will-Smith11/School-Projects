@@ -1,16 +1,34 @@
 import sqlite3 as sq
-from Final_Project import username
 
-game = 'snake'
-best_score = 4
 
-def dataBase_in():
+def dataBase_in(playerID=str, game=str, score=int):
 
-    db = sq.connect('Game_Username_and_HighScores.db')
+    db = sq.connect('Game_Username_and_Scores.db')
     c = db.cursor()
-    c.execute("CREATE TABLE IF NOT EXISTS game_high_scores(username, game, best_score)")
-    c.execute("INSERT INTO game_high_scores(username, game, best_score)VALUES(:username, :game, :best_score)",
-            {'username':username.return_username(), 'game':game, 'best_score':best_score })
+    c.execute("CREATE TABLE IF NOT EXISTS game_data(username, game, score)")
+    c.execute("INSERT INTO game_data(username, game, score)VALUES(:username, :game, :score)",
+            {'username':playerID, 'game':game, 'score':score })
     db.commit()
 
-dataBase_in()
+
+class Give_Highscores():
+        game = str
+        def __init__(self,game):
+                self.game = game       
+        
+        def give_name(self,game):
+                self.game = game
+                db = sq.connect('Game_Username_and_Scores.db')
+                c = db.cursor()
+                c.execute("SELECT * FROM game_data WHERE game= '%s' order by score desc limit 1"% self.game)
+                return (c.fetchone()[0]) 
+        
+        def give_score(self,game):
+                self.game = game
+                db = sq.connect('Game_Username_and_Scores.db')
+                c = db.cursor()
+                c.execute("SELECT * FROM game_data WHERE game= '%s' order by score desc limit 1"%self.game)
+                return  (c.fetchone()[2]) 
+
+
+

@@ -7,23 +7,19 @@ import games.game_snake
 import games.Space_invaders
 
 
-
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
-color_inactive = pygame.Color('lightskyblue3')
-color_active = pygame.Color('dodgerblue2')
-FONT = pygame.font.Font(None, 25)
+color_inactive = pygame.Color('black')
+color_active = pygame.Color('white')
+FONT = pygame.font.Font(None, 45)
 pygame.mouse.set_visible(False)
-
-
-
 
 
 class Username_Box:
 
-    def __init__(self, text = ''):
-        self.rect = pygame.Rect(220, 100, 100, 30)
-        self.color = color_inactive
+    def __init__(self,x,y,w,h, text = ''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = ((0,0,0))
         self.text = ""
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
@@ -36,15 +32,19 @@ class Username_Box:
                 self.active = False
         
             self.color = color_active if self.active else color_inactive
-        
+
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
+                    if len(self.text)> 12:
+                        self.text = self.text[:-1]
                 self.txt_surface = FONT.render(self.text, True, self.color)
     
+
+
     def return_username(self):
         return self.text
 
@@ -57,8 +57,6 @@ class Username_Box:
         pygame.draw.rect(screen, self.color, self.rect, 2)
         
 
-
-
 class Mouse(pygame.sprite.Sprite):
     def __init__(self):
             pygame.sprite.Sprite.__init__(self)
@@ -70,13 +68,14 @@ class Mouse(pygame.sprite.Sprite):
 
 
 class Enter_Box(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.font = pygame.font.SysFont("arial",30)
-        self.text = "Press to continue"
-        self.location = (320,240)
+    def __init__(self,x,y,text):
+        pygame.sprite.Sprite.__init__(self)    
+        self.font = pygame.font.SysFont("monaco",60)
+        self.text = text
+        self.location = (x,y)
         self.colour = ((0,0,0))
         self.background = (255,255,255)
+
     def update(self):
         self.image = self.font.render(self.text, 1,(self.colour), (self.background))
         self.rect = self.image.get_rect()
@@ -111,72 +110,26 @@ class Game_slection(pygame.sprite.Sprite):
         self.center = (x,y)
     def update(self):   
         self.rect.center = self.center
-    
-        
 
-
-username = Username_Box()
-
-def game_login():
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-
-    
-    enter = Enter_Box()
-    mouse_loc = Mouse()
-
-    
-    label1 = Label(100,110, [255,255,255],"username", 30)
-    
-    print_to_screen = [username]
-    all_labels = pygame.sprite.Group(label1, enter,mouse_loc)
-    
-    continue_box = pygame.sprite.Group(enter)
-
-    global intro
-    intro = True
-    clock = pygame.time.Clock()
-    while intro:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                intro = False
-            
-            if event.type == pygame.MOUSEBUTTONDOWN:
-
-                if pygame.sprite.spritecollide(mouse_loc,continue_box, False): 
-                    data_base_fuctions.dataBase_in()
-                    print(username.return_username())
-                    intro = False
-                    game_slection_screen()
-                                   
-            
-            for box in print_to_screen:
-                box.handle_event(event)
-
-
-        for box in print_to_screen:
-            box.update()
-        
-        
-        for box in print_to_screen:
-            box.draw(screen)
-        
-  
-        all_labels.clear(screen,background)
-        all_labels.update()
-        all_labels.draw(screen)   
-        
-        
-        
-    
-        pygame.display.flip()
-        clock.tick(60)
+class Ranking_display(pygame.sprite.Sprite):
+    def __init__(self,x,y,color,game):
+        pygame.sprite.Sprite.__init__(self)
+        grab_info = data_base_fuctions.Give_Highscores(game)
+        self.font = pygame.font.SysFont('monaco', 15)
+        self.text = ("User '%s' Score of '%d' Is the top score for this game " % (grab_info.give_name(game),grab_info.give_score(game)))
+        self.center = (x,y)
+        self.color = color
+    def update(self):
+        self.image = self.font.render(self.text,1,(self.color))
+        self.rect = self.image.get_rect()
+        self.rect.center = self.center   
 
 
 
 def game_slection_screen():
     clock = pygame.time.Clock()
-    background = pygame.image.load(os.path.join(os.path.dirname(__file__), 'pictures','christmas.jpg')).convert_alpha()
+
+    background = pygame.image.load(os.path.join(os.path.dirname(__file__), 'pictures','christmas.jpg'))
     background.get_rect()
     page = Game_slection(175,125,(255,0,0),(os.path.join(os.path.dirname(__file__), 'pictures','snake_background.jpg')))
     page2 = Game_slection(175,475,(255,0,255),(os.path.join(os.path.dirname(__file__), 'pictures','space_invader_background.jpg')))
@@ -185,15 +138,18 @@ def game_slection_screen():
     mouse = Mouse()
 
     game_label = Label(175,125,[0,0,0],"Snake Game", 50)
-    game_label2 = Label(175,475,[255,255,255],"Space Invaders",50)
+    snake_leader = Ranking_display(175,200,(0,0,0),"Snake")
 
-    print_to_screen = pygame.sprite.Group(page,page2,page3,page4,mouse,game_label,game_label2)
+    game_label2 = Label(175,475,[255,255,255],"Space Invaders",50)
+    space_leader = Ranking_display(175,360,(255,255,255),"Aliens")
+
+    print_to_screen = pygame.sprite.Group(page,page2,page3,page4,game_label,game_label2,snake_leader,space_leader)
+    cursor = pygame.sprite.Group(mouse)
     
     game1 = pygame.sprite.Group(page)
     game2 = pygame.sprite.Group(page2)
     game3 = pygame.sprite.Group(page3)
     game4 = pygame.sprite.Group(page4)
-    
     
 
     done = False
@@ -201,15 +157,16 @@ def game_slection_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.sprite.spritecollide(mouse,game1,False):
                     done = True
                     games.game_snake.main()
+                    
                 
                 if pygame.sprite.spritecollide(mouse,game2,False):
                     done = True
                     games.Space_invaders.main()
+                   
                 
                 if pygame.sprite.spritecollide(mouse,game3,False):
                     done = True
@@ -222,15 +179,19 @@ def game_slection_screen():
 
         screen.blit(background,(0,0))
         print_to_screen.clear(screen,background)
+        cursor.clear(screen,background)
         print_to_screen.update()
+        cursor.update()
         print_to_screen.draw(screen)
+        cursor.draw(screen)
+
 
         pygame.display.flip()
         clock.tick(30)
 
 
 if __name__ =="__main__":
-    game_login()
+    game_slection_screen()
     pygame.quit()
  
 
