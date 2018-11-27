@@ -115,8 +115,12 @@ class Ranking_display(pygame.sprite.Sprite):
     def __init__(self,x,y,color,game):
         pygame.sprite.Sprite.__init__(self)
         grab_info = data_base_fuctions.Give_Highscores(game)
-        self.font = pygame.font.SysFont('monaco', 15)
-        self.text = ("User '%s' Score of '%d' Is the top score for this game " % (grab_info.give_name(game),grab_info.give_score(game)))
+        
+        self.font = pygame.font.SysFont('monaco', 30)
+        try:
+            self.text = ("User '%s' Score of '%d' Is the top score for this game " % (grab_info.give_name(game),grab_info.give_score(game)))
+        except:
+            self.text = "error getting data"
         self.center = (x,y)
         self.color = color
     def update(self):
@@ -140,10 +144,10 @@ def game_slection_screen():
     mouse = Mouse()
 
     game_label = Label(175,125,[0,0,0],"Snake Game", 50)
-    snake_leader = Ranking_display(175,200,(0,0,0),"Snake")
+    snake_leader = Ranking_display(175,300,(0,0,0),"Snake")
 
     game_label2 = Label(175,475,[255,255,255],"Space Invaders",50)
-    space_leader = Ranking_display(175,360,(255,255,255),"Aliens")
+    space_leader = Ranking_display(175,340,(0,0,0),"Aliens")
 
     print_to_screen = pygame.sprite.Group(page,page2,page3,page4,game_label,game_label2,snake_leader,space_leader)
     cursor = pygame.sprite.Group(mouse)

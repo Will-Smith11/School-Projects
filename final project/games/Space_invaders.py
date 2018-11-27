@@ -5,6 +5,12 @@ import Final_Project
 import os
 import data_base_fuctions
 
+
+
+#
+# ADD RELOAD AND SHOT LIMIT 
+#
+
 pygame.init()
 screen = pygame.display.set_mode((800,600))
 

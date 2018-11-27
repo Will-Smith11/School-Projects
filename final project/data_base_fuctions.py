@@ -18,17 +18,21 @@ class Give_Highscores():
         
         def give_name(self,game):
                 self.game = game
-                db = sq.connect('Game_Username_and_Scores.db')
-                c = db.cursor()
-                c.execute("SELECT * FROM game_data WHERE game= '%s' order by score desc limit 1"% self.game)
-                return (c.fetchone()[0]) 
+                try:
+                        db = sq.connect('Game_Username_and_Scores.db')
+                        c = db.cursor()
+                        c.execute("SELECT * FROM game_data WHERE game= '%s' order by score desc limit 1"% self.game)
+                        return (c.fetchone()[0]) 
+                except:
+                        pass
         
         def give_score(self,game):
                 self.game = game
-                db = sq.connect('Game_Username_and_Scores.db')
-                c = db.cursor()
-                c.execute("SELECT * FROM game_data WHERE game= '%s' order by score desc limit 1"%self.game)
-                return  (c.fetchone()[2]) 
-
-
+                try:
+                        db = sq.connect('Game_Username_and_Scores.db')
+                        c = db.cursor()
+                        c.execute("SELECT * FROM game_data WHERE game= '%s' order by score desc limit 1"%self.game)
+                        return  (c.fetchone()[2]) 
+                except:
+                        pass
 
