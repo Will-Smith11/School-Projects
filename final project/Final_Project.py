@@ -1,13 +1,22 @@
 """the main interface for final project"""
 import pygame
 import data_base_fuctions
+import high_score_page
 import sys
 import os
 import games.game_snake
 import games.Space_invaders
 
 
+
 pygame.init()
+pygame.mixer.init()
+
+
+s = pygame.mixer.Sound(sound("file name"))
+s.play()
+
+
 screen = pygame.display.set_mode((800, 600))
 color_inactive = pygame.Color('black')
 color_active = pygame.Color('white')
@@ -17,12 +26,13 @@ pygame.mouse.set_visible(False)
 
 class Username_Box:
 
-    def __init__(self,x,y,w,h, text = ''):
+    def __init__(self,x,y,w,h, text =''):
         self.rect = pygame.Rect(x, y, w, h)
         self.color = ((0,0,0))
         self.text = ""
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
+        self.has_text = False 
       
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -44,10 +54,11 @@ class Username_Box:
                 self.txt_surface = FONT.render(self.text, True, self.color)
     
 
-
     def return_username(self):
-        return self.text
-
+        if self.has_text:
+            return self.text
+        pass
+        
     def update(self):
         width = max(200, self.txt_surface.get_width()+10)
         self.rect.w = width
@@ -55,11 +66,17 @@ class Username_Box:
     def draw(self, screen):
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         pygame.draw.rect(screen, self.color, self.rect, 2)
-        
+
+    @property
+    def has_val(self):
+        if (len(self.text)) >= 3:
+            self.has_text = True
+        return self.has_text
+
 
 class Mouse(pygame.sprite.Sprite):
     def __init__(self):
-            pygame.sprite.Sprite.__init__(self)
+            super().__init__()
             self.image = pygame.image.load(os.path.join(os.path.dirname(__file__), 'pictures','cursor.png')).convert_alpha()
             self.rect = self.image.get_rect()
         
@@ -69,7 +86,7 @@ class Mouse(pygame.sprite.Sprite):
 
 class Enter_Box(pygame.sprite.Sprite):
     def __init__(self,x,y,text):
-        pygame.sprite.Sprite.__init__(self)    
+        super().__init__()    
         self.font = pygame.font.SysFont("monaco",60)
         self.text = text
         self.location = (x,y)
@@ -84,7 +101,7 @@ class Enter_Box(pygame.sprite.Sprite):
 
 class Label(pygame.sprite.Sprite):
     def __init__(self,x,y,color = (255,255,255),text='',size = int(30)):
-        pygame.sprite.Sprite.__init__(self)
+        super().__init__()
         self.size = size
         self.font = pygame.font.SysFont("areal",self.size)
         self.text = text
@@ -97,12 +114,13 @@ class Label(pygame.sprite.Sprite):
 
 
 class Game_slection(pygame.sprite.Sprite):
-    def __init__(self,x,y, color = (int,int,int),img_dir = ''):
-        pygame.sprite.Sprite.__init__(self)
+    
+    def __init__(self,x,y, color = (int,int,int),img_dir = '', img_size = (350,250)):
+        super().__init__()
         try:
             self.image = pygame.image.load(img_dir)
         except:
-            self.image = pygame.Surface((350,250))
+            self.image = pygame.Surface(img_size)
             self.image.fill((color))
         
         self.rect = self.image.get_rect()
@@ -111,25 +129,12 @@ class Game_slection(pygame.sprite.Sprite):
     def update(self):   
         self.rect.center = self.center
 
-class Ranking_display(pygame.sprite.Sprite):
-    def __init__(self,x,y,color,game):
-        pygame.sprite.Sprite.__init__(self)
-        grab_info = data_base_fuctions.Give_Highscores(game)
-        
-        self.font = pygame.font.SysFont('monaco', 30)
-        try:
-            self.text = ("User '%s' Score of '%d' Is the top score for this game " % (grab_info.give_name(game),grab_info.give_score(game)))
-        except:
-            self.text = "error getting data"
-        self.center = (x,y)
-        self.color = color
-    def update(self):
-        self.image = self.font.render(self.text,1,(self.color))
-        self.rect = self.image.get_rect()
-        self.rect.center = self.center   
 
 def img(img=str):
     return os.path.join(os.path.dirname(__file__), 'pictures','{}'.format(img))
+
+def sound(sound=str):
+     return os.path.join(os.path.dirname(__file__), 'sounds', '{}'.format(sound))
 
 
 def game_slection_screen():
@@ -137,25 +142,24 @@ def game_slection_screen():
 
     background = pygame.image.load(img("christmas.jpg"))
     background.get_rect()
-    page = Game_slection(175,125,(255,0,0),(img("snake_background.jpg")))
-    page2 = Game_slection(175,475,(255,0,255),(img("space_invader_background.jpg")))
-    page3 = Game_slection(625,125,(0,255,0))
-    page4 = Game_slection(625,475,(0,255,255))
+    page = Game_slection(175,300,(255,0,0),(img("snake_background.jpg")))
+    page2 = Game_slection(625,300,(255,0,255),(img("space_invader_background.jpg")))
+   
+    page3 = Game_slection(400,75,(255,255,255),(img('title.PNG')),(600,150))
+    page4 = Game_slection(400,550,(255,255,255),(img('highscore.png')),(600,150))
     mouse = Mouse()
 
-    game_label = Label(175,125,[0,0,0],"Snake Game", 50)
-    snake_leader = Ranking_display(175,300,(0,0,0),"Snake")
+    game_label = Label(175,350,[0,0,0],"Snake Game", 50)
+    game_label2 = Label(625,350,[255,255,255],"Space Invaders",50)
+    
 
-    game_label2 = Label(175,475,[255,255,255],"Space Invaders",50)
-    space_leader = Ranking_display(175,340,(0,0,0),"Aliens")
-
-    print_to_screen = pygame.sprite.Group(page,page2,page3,page4,game_label,game_label2,snake_leader,space_leader)
+    print_to_screen = pygame.sprite.Group(page,page2,page3,page4,mouse,game_label,game_label2)
     cursor = pygame.sprite.Group(mouse)
     
     game1 = pygame.sprite.Group(page)
     game2 = pygame.sprite.Group(page2)
-    game3 = pygame.sprite.Group(page3)
-    game4 = pygame.sprite.Group(page4)
+    high_score_pg = pygame.sprite.Group(page4)
+   
     
 
     done = False
@@ -174,13 +178,11 @@ def game_slection_screen():
                     games.Space_invaders.main()
                    
                 
-                if pygame.sprite.spritecollide(mouse,game3,False):
+                if pygame.sprite.spritecollide(mouse,high_score_pg,False):
                     done = True
-                    # put game in here
+                    high_score_page.main()
                 
-                if pygame.sprite.spritecollide(mouse,game4,False):
-                    done = True
-
+                
 
 
         screen.blit(background,(0,0))

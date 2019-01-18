@@ -4,12 +4,9 @@ import random
 import Final_Project
 import os
 import data_base_fuctions
+import time
 
 
-
-#
-# ADD RELOAD AND SHOT LIMIT 
-#
 
 pygame.init()
 screen = pygame.display.set_mode((800,600))
@@ -22,7 +19,7 @@ def img(img=str):
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        super().__init__()
         self.image = pygame.image.load(img("player.png"))
         self.rect = self.image.get_rect()
         self.rect.centerx = 400
@@ -43,22 +40,24 @@ class Player(pygame.sprite.Sprite):
     def get_pos_x(self):
         return self.rect.x
 
+
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        super().__init__()
         self.image = pygame.image.load(img("bullet.png"))
         self.rect = self.image.get_rect()
     def update(self):
-        self.rect.y -= 10
+        self.rect.y -= 9
+
 
 class Alien(pygame.sprite.Sprite):
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        super().__init__()
         self.image = pygame.image.load(img("alien.png"))
         self.rect = self.image.get_rect()
     
     def update(self):
-        self.rect.x += 5
+        self.rect.x += 9
         if self.rect.x > 780:
             self.rect.y += 100
             self.rect.x = 20
@@ -68,21 +67,23 @@ class Alien(pygame.sprite.Sprite):
     def get_y(self):
         return self.rect.y
 
+
 class Bomb(pygame.sprite.Sprite):
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        super().__init__()
         self.image = pygame.image.load(img("bomb.png"))
         self.rect = self.image.get_rect()
     
     def update(self):
-        self.rect.y += 7
+        self.rect.y += 9
 
 def showScore():
     font = pygame.font.SysFont('monaco', 32)
-    text = font.render("Score  :  {0}".format(score), True, (0,0,0))
+    text = font.render("Score  :  {0}".format(score), True, (255,255,255))
     location = text.get_rect()
     location.midtop = (80, 10)
     screen.blit(text, location)
+
 
 def game_over_text():
     font = pygame.font.SysFont('monaco', 60, bold=True)
@@ -97,7 +98,7 @@ def game_over():
     pygame.display.set_caption("Game Over")
     
     button = Final_Project.Enter_Box(400,400,"""click to add your score """)
-    button2= Final_Project.Enter_Box(400,442,"""or to continue""")
+    button2= Final_Project.Enter_Box(400,442,"""your name needs to be 3 characters""")
 
     all_sprits = pygame.sprite.Group(mouse)
     button_spirte = pygame.sprite.Group(button,button2)
@@ -115,10 +116,12 @@ def game_over():
                 Final_Project.game_slection_screen()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.sprite.spritecollide(mouse,button_spirte, False):
-                    endscreen = False
-                    data_base_fuctions.dataBase_in(playerID.return_username(),"Aliens",score)
-                    Final_Project.game_slection_screen()
-                    
+                    if playerID.has_val:
+                        endscreen = False
+                        data_base_fuctions.dataBase_in(playerID.return_username(),"Aliens",score)
+                        Final_Project.game_slection_screen()
+                    else:
+                        pass
 
             for box in print_to_screen:
                 box.handle_event(event)
@@ -146,12 +149,13 @@ def game_over():
         pygame.display.flip()
           
 
-
 def main():
     global score, background
     pygame.display.set_caption("Space Invaders")
-    background = pygame.image.load(os.path.join(os.path.dirname(os.path.dirname( __file__ )), 'pictures','Space_background.jpg'))
+    background = pygame.image.load(img("Space_background.jpg"))
     background.get_rect()
+
+    reload_time = pygame.time.get_ticks()
 
     score = 0
     player = Player()
@@ -165,6 +169,8 @@ def main():
     clock = pygame.time.Clock()
     keepygameoing = True
     while keepygameoing:
+        current_time = pygame.time.get_ticks()
+        
 
         
         screen.blit(background,(0, 0))
@@ -172,28 +178,51 @@ def main():
             if event.type == pygame.QUIT:
                 keepygameoing = False
                 
+            if current_time - reload_time > 600:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_SPACE]:
+                    bullet = Bullet()
+                
+                    bullet.rect.x = player.rect.x
+                    bullet.rect.y = player.rect.y
+                
+                    all_sprites.add(bullet)
+                    bullet_list.add(bullet)
+                    reload_time = current_time
+                
             
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_SPACE]:
-                bullet = Bullet()
-            
-                bullet.rect.x = player.rect.x
-                bullet.rect.y = player.rect.y
-            
-                all_sprites.add(bullet)
-                bullet_list.add(bullet)
-            
+        if score <=75:
+            if random.randint(0,30) == 5:
+                alien = Alien()
+                
+                alien.rect.x = 20
+                alien.rect.y = 20
 
-        if random.randint(0,30) == 5:
-            alien = Alien()
-            
-            alien.rect.x = 20
-            alien.rect.y = 20
+                all_sprites.add(alien)
+                alien_list.add(alien)
+        elif score >=76 and score <=140:
+            if random.randint(0,25) == 5:
+                alien = Alien()
+                
+                alien.rect.x = 20
+                alien.rect.y = 20
 
-            all_sprites.add(alien)
-            alien_list.add(alien)
+                all_sprites.add(alien)
+                alien_list.add(alien)
 
-        if random.randint(0,20) == 5:
+        elif score >= 140:
+            if random.randint(0,20) == 5:
+                alien = Alien()
+                
+                alien.rect.x = 20
+                alien.rect.y = 20
+
+                all_sprites.add(alien)
+                alien_list.add(alien)
+
+
+
+        if random.randint(0,35) == 5:
             bomb = Bomb()
             try:
                 for x in alien_list.sprites():

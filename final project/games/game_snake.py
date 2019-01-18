@@ -25,17 +25,18 @@ def game_over():
     pygame.display.set_caption("Game Over")
     background = pygame.Surface(screen.get_size())
     background = background.convert()
-    background.fill((255,0,255))
+    background.fill((0,0,255))
 
 
     button = Final_Project.Enter_Box(400,400,"""click to add your score """)
-    button2= Final_Project.Enter_Box(400,442,"""or to continue""")
+    button2= Final_Project.Enter_Box(400,442,"""your name needs to be 3 characters""")
 
     all_sprits = pygame.sprite.Group(mouse)
     button_spirte = pygame.sprite.Group(button,button2)
     clock = pygame.time.Clock()
     
     playerID = Final_Project.Username_Box(300,250,300,50)
+    
     print_to_screen = [playerID]
     
     endscreen = True
@@ -47,10 +48,12 @@ def game_over():
                 Final_Project.game_slection_screen()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.sprite.spritecollide(mouse,button_spirte, False):
-                    endscreen = False
-                    data_base_fuctions.dataBase_in(playerID.return_username(),"Snake",score)
-                    Final_Project.game_slection_screen()
-                    
+                    if playerID.has_val:
+                        endscreen = False
+                        data_base_fuctions.dataBase_in(playerID.return_username(),"Snake",score)
+                        Final_Project.game_slection_screen()
+                    else:
+                        pass
 
             for box in print_to_screen:
                 box.handle_event(event)
@@ -82,7 +85,6 @@ def game_over():
 
 def main():
     global score,screen
- 
     screen = pygame.display.set_mode((800,600))
     pygame.display.set_caption("Snake Game")
     background = pygame.Surface(screen.get_size())
